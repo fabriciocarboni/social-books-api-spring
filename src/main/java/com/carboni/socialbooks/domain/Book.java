@@ -37,7 +37,7 @@ public class Book {
 	
 	@JsonInclude(Include.NON_NULL)
 	@Transient
-	private List<Comentario> comentarios;
+	private List<Comments> comentarios;
 	
 	@JsonInclude(Include.NON_NULL)
 	private String autor;
@@ -81,10 +81,10 @@ public class Book {
 	public void setResumo(String resumo) {
 		this.resumo = resumo;
 	}
-	public List<Comentario> getComentarios() {
+	public List<Comments> getComentarios() {
 		return comentarios;
 	}
-	public void setComentarios(List<Comentario> comentarios) {
+	public void setComentarios(List<Comments> comentarios) {
 		this.comentarios = comentarios;
 	}
 	public String getAutor() {

@@ -2,7 +2,7 @@ package com.carboni.socialbooks.domain;
 
 import java.util.Date;
 
-public class Comentario {
+public class Comments {
 	
 	private Long id;
 	private String texto;

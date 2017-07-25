@@ -18,19 +18,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.carboni.socialbooks.domain.Book;
-import com.carboni.socialbooks.repository.BooksRepository;
+import com.carboni.socialbooks.services.BooksService;
+import com.carboni.socialbooks.services.exceptions.BookNotFoundException;
 
 @RestController
 @RequestMapping("/books")
 public class BooksResources {
 	
 	@Autowired
-	private BooksRepository booksRepository;
+	private BooksService booksService; //injecting business rule (service layer)
 	
 
 	@GetMapping
 	public ResponseEntity<List<Book>> list() {
-		return ResponseEntity.status(HttpStatus.OK).body(booksRepository.findAll()); //Spring Data does this implementation
+		return ResponseEntity.status(HttpStatus.OK).body(booksService.list()); //Spring Data does this implementation
 		//return Arrays.asList(books); // o proprio spring atraves do @RequestController ja retorna em formato json
 	}
 	
@@ -38,7 +39,7 @@ public class BooksResources {
 	//# Best practice: Every time you create a resource make it returns 201 code (resource created) and inform taht URI where that resouce can be retrieved
 	@PostMapping //by default either get and post method are pointing to /books declared at @RequestMethod("/books")
 	public ResponseEntity<Void> save(@RequestBody Book book) { //get information by post and put it into Book object
-		book = booksRepository.save(book);
+		book = booksService.save(book);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}").buildAndExpand(book.getId()).toUri();
@@ -51,29 +52,37 @@ public class BooksResources {
 	@GetMapping("/{id}")
 	public ResponseEntity<?> search(@PathVariable("id") Long id) { //Through @PathVariable I can get the variable /{id} and pass it as parameter to this method.
 		//ResponseEntity encapsulates object return(book), and make possible to treat http response
-		Book book = booksRepository.findOne(id);
-		
-		if (book == null) {
-			return ResponseEntity.notFound().build(); //return 404 notfound and .build() to construct the body
+		Book book = null;
+		try {
+			book = booksService.search(id);
+		} catch (BookNotFoundException e) {
+			return ResponseEntity.notFound().build();
 		}
-		
 		return ResponseEntity.status(HttpStatus.OK).body(book); //return status http 200 OK and put book object in the response body
 	}
 	
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable("id") Long id) {
+	public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
 		try {
-			booksRepository.delete(id);
+			booksService.delete(id);
 		} catch (EmptyResultDataAccessException e) {
-			// TODO: handle exception
+			return ResponseEntity.notFound().build();
 		}
+		return ResponseEntity.noContent().build(); // When we do not have any content to be displayed after resource deleting
 	}
 	
 	@PutMapping("/{id}")
-	public void update(@RequestBody Book book, @PathVariable("id") Long id)  {
+	public ResponseEntity<Void> update(@RequestBody Book book, @PathVariable("id") Long id)  {
 		book.setId(id); //assures that the resource is being updated is the resource in the URI not in the body
-		booksRepository.save(book);
+		booksService.save(book);
+		try {
+			
+		} catch (BookNotFoundException e) {
+			return ResponseEntity.noContent().build();
+		}
+			
 		// if id exists, updated it, if not create it. That's why is used setId(id)
+		return ResponseEntity.noContent().build(); //Update resource and returns no content
 	}
 	
 	

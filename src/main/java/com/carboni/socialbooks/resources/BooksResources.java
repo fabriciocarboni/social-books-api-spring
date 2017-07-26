@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +18,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.carboni.socialbooks.domain.Book;
 import com.carboni.socialbooks.services.BooksService;
-import com.carboni.socialbooks.services.exceptions.BookNotFoundException;
 
 @RestController
 @RequestMapping("/books")
@@ -52,22 +50,13 @@ public class BooksResources {
 	@GetMapping("/{id}")
 	public ResponseEntity<?> search(@PathVariable("id") Long id) { //Through @PathVariable I can get the variable /{id} and pass it as parameter to this method.
 		//ResponseEntity encapsulates object return(book), and make possible to treat http response
-		Book book = null;
-		try {
-			book = booksService.search(id);
-		} catch (BookNotFoundException e) {
-			return ResponseEntity.notFound().build();
-		}
+		Book book = booksService.search(id);;
 		return ResponseEntity.status(HttpStatus.OK).body(book); //return status http 200 OK and put book object in the response body
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-		try {
-			booksService.delete(id);
-		} catch (EmptyResultDataAccessException e) {
-			return ResponseEntity.notFound().build();
-		}
+		booksService.delete(id);
 		return ResponseEntity.noContent().build(); // When we do not have any content to be displayed after resource deleting
 	}
 	
@@ -75,11 +64,6 @@ public class BooksResources {
 	public ResponseEntity<Void> update(@RequestBody Book book, @PathVariable("id") Long id)  {
 		book.setId(id); //assures that the resource is being updated is the resource in the URI not in the body
 		booksService.save(book);
-		try {
-			
-		} catch (BookNotFoundException e) {
-			return ResponseEntity.noContent().build();
-		}
 			
 		// if id exists, updated it, if not create it. That's why is used setId(id)
 		return ResponseEntity.noContent().build(); //Update resource and returns no content

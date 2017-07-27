@@ -7,13 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-
-// parei no 5:18
 
 @Entity // entidade jpa 
 public class Book {
@@ -36,8 +34,9 @@ public class Book {
 	private String resumo;
 	
 	@JsonInclude(Include.NON_NULL)
-	@Transient
-	private List<Comments> comentarios;
+	// @Transient //Para o Hivernate descartar este campo
+	@OneToMany(mappedBy = "book") //This book can have many comments
+	private List<Comment> comentarios;
 	
 	@JsonInclude(Include.NON_NULL)
 	private String autor;
@@ -81,10 +80,10 @@ public class Book {
 	public void setResumo(String resumo) {
 		this.resumo = resumo;
 	}
-	public List<Comments> getComentarios() {
+	public List<Comment> getComentarios() {
 		return comentarios;
 	}
-	public void setComentarios(List<Comments> comentarios) {
+	public void setComentarios(List<Comment> comentarios) {
 		this.comentarios = comentarios;
 	}
 	public String getAutor() {

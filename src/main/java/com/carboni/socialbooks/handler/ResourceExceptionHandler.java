@@ -18,7 +18,11 @@ public class ResourceExceptionHandler {
 	@ExceptionHandler(BookNotFoundException.class)
 	public ResponseEntity<DetailsError> handleBookNotFoundException(BookNotFoundException e, HttpServletRequest request) {
 		
-		DetailsError erro = new DetailsError();
+		DetailsError erro = new DetailsError(); //Pergunta para Algaworks :Ao invés de instanciar poderia injetar esse objeto?
+		/*Resposta:Até poderia, mas esses objetos que usamos para carregar os dados 
+		(somente informação), nós não temos vantagens em injetar ele. Basicamente, é porque eles não possuem comportamentos 
+		(ou regras),e, quando tem, são regras que envolvem somente a própria informação que já está contida nele.*/
+
 		erro.setStatus(404l);
 		erro.setTitle("The book could not be found");
 		erro.setDeveloperMessage("http://erros.socialbooks.com/404"); //As a best practice we should have resources to show all errors available and how the client could handle it.

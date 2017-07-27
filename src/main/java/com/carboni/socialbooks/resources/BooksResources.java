@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.carboni.socialbooks.domain.Book;
+import com.carboni.socialbooks.domain.Comment;
 import com.carboni.socialbooks.services.BooksService;
 
 @RestController
@@ -69,5 +70,22 @@ public class BooksResources {
 		return ResponseEntity.noContent().build(); //Update resource and returns no content
 	}
 	
+	@PostMapping("/{id}/comments")
+	public ResponseEntity<Void> addComment(@PathVariable("id") Long bookId, @RequestBody Comment comment) {
+		booksService.saveComment(bookId, comment);
+		
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+		
+		return ResponseEntity.created(uri).build();
+	}
+	
+	@GetMapping("{id}/comments")
+	public ResponseEntity<List<Comment>> listComments(@PathVariable("id") Long bookId) {
+	
+		List<Comment> comments = booksService.listComments(bookId);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(comments);
+		
+	}
 	
 }

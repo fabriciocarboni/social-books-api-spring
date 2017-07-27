@@ -1,12 +1,15 @@
 package com.carboni.socialbooks.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.carboni.socialbooks.domain.Book;
+import com.carboni.socialbooks.domain.Comment;
 import com.carboni.socialbooks.repository.BooksRepository;
+import com.carboni.socialbooks.repository.CommentsRepository;
 import com.carboni.socialbooks.services.exceptions.BookNotFoundException;
 
 @Service //Tell to spring that this class is a service
@@ -14,6 +17,9 @@ public class BooksService {
 
 	@Autowired
 	private BooksRepository booksRepository;
+	
+	@Autowired
+	private CommentsRepository commentsRepository;
 	
 	public List<Book> list() {
 		return booksRepository.findAll();
@@ -49,6 +55,19 @@ public class BooksService {
 	
 	private void checkBookExistence(Book book){
 		this.search(book.getId());
+	}
+	
+	public Comment saveComment(Long bookId, Comment comment) {
+		Book book = search(bookId);
+		comment.setBook(book);
+		comment.setData(new Date());
+		
+		return commentsRepository.save(comment);
+	}
+	
+	public List<Comment> listComments(Long bookId){
+		Book book = search(bookId);
+		return book.getComentarios();
 	}
 	
 }

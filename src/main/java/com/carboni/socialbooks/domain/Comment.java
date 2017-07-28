@@ -22,7 +22,14 @@ public class Comment {
 	private String usuario;
 	private Date data;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	
+	/*
+	 * É para avisar ao Hibernate para não retornar os dados dessa propriedade junto com as outras.
+		Daí ele só retorna os dados dela quando a propriedade for utilizada. Ele usa técnicas de Proxy para isso. Basicamente, é a API de reflexão do Java.
+		Essa propriedade é, por padrão, EAGER, exceto nas listas que ela é LAZY.
+	 * */
+	
+	@ManyToOne(fetch = FetchType.LAZY) 
 	@JoinColumn(name = "BOOK_ID")
 	@JsonIgnore //para nao colocar a informacao do livro nos comentarios. Para não listar os livros dentro de um comentario em virtude do join entre comment e book
 	private Book book;

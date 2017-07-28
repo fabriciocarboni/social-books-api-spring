@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,8 +40,10 @@ public class Book {
 	@OneToMany(mappedBy = "book") //This book can have many comments
 	private List<Comment> comentarios;
 	
+	@ManyToOne //N livros para um determinado autor
+	@JoinColumn(name = "AUTOR_ID") // Desta maneira o Spring já cria a coluna AUTOR_ID na tabela Book
 	@JsonInclude(Include.NON_NULL)
-	private String autor;
+	private Autor autor;
 	
 	// default constructor
 	public Book() {};
@@ -86,10 +90,10 @@ public class Book {
 	public void setComentarios(List<Comment> comentarios) {
 		this.comentarios = comentarios;
 	}
-	public String getAutor() {
+	public Autor getAutor() {
 		return autor;
 	}
-	public void setAutor(String autor) {
+	public void setAutor(Autor autor) {
 		this.autor = autor;
 	}
 	

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.carboni.socialbooks.domain.DetailsError;
+import com.carboni.socialbooks.services.exceptions.AuthorExistentException;
+import com.carboni.socialbooks.services.exceptions.AuthorNotFoundException;
 import com.carboni.socialbooks.services.exceptions.BookNotFoundException;
 
 @ControllerAdvice //This annotation allows spring to intercept all kind of exceptions in this program
@@ -30,7 +32,32 @@ public class ResourceExceptionHandler {
 		
 		//return ResponseEntity.notFound().build(); //Any exception caught by BookNotFoundException will return notFound
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
-		
 	}
 
+	@ExceptionHandler(AuthorExistentException.class)
+	public ResponseEntity<DetailsError> handleAuthorNotFoundException(AuthorExistentException e, HttpServletRequest request) {
+		
+		DetailsError erro = new DetailsError();
+
+		erro.setStatus(409l); //conflito
+		erro.setTitle("Author already exists.");
+		erro.setDeveloperMessage("http://erros.socialbooks.com/409");
+		erro.setTimestamp(System.currentTimeMillis());
+		
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+	}
+	
+	@ExceptionHandler(AuthorNotFoundException.class)
+	public ResponseEntity<DetailsError> handleAuthorNotFoundException(AuthorNotFoundException e, HttpServletRequest request) {
+		
+		DetailsError erro = new DetailsError(); 
+		erro.setStatus(404l);
+		erro.setTitle("The author could not be found");
+		erro.setDeveloperMessage("http://erros.socialbooks.com/404");
+		erro.setTimestamp(System.currentTimeMillis());
+		
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+	}
+	
+	
 }
